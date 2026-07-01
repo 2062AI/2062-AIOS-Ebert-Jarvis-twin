@@ -30,9 +30,9 @@ services:
       # Publish to localhost only by default so the dashboard (TIER 1) is NOT
       # reachable from the LAN/internet. Override WEB_BIND=0.0.0.0 only when
       # fronting it with a TLS reverse proxy + DASHBOARD_PUBLIC=true.
-      - "${WEB_BIND:-127.0.0.1}:3000:3000"
+      - "${WEB_BIND:-127.0.0.1}:${HOST_PORT:-3000}:3000"
     volumes:
-      - ../Jarvis-Vault:/vault
+      - ./demo-vault:/vault
       # Bind-mount the project itself so the engine can run git from /workspace
       # (Ep 6 auto-commit). Read-write so commits succeed; the secret guard
       # prevents anything dangerous from being pushed.
@@ -45,7 +45,7 @@ services:
       # runs the current tests against the installed node_modules.
       - ./test:/app/test
       # Backups (Season 4): DB dumps + vault snapshots land here on the host.
-      - ../Jarvis-Backups:/backups
+      - ./demo-backups:/backups
 
 volumes:
   aios-pgdata:

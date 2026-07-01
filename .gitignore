@@ -25,3 +25,5 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+demo-backups/
+demo-vault/.obsidian/
