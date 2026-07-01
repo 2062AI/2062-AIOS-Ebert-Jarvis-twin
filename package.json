@@ -1,0 +1,22 @@
+{
+  "name": "aios-ebert",
+  "version": "0.4.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "description": "AIOS — an open-source personal AI Operating System (Ebert). Self-hosted agent platform with budget governor, kill switch, and tamper-evident audit log.",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mammoth": "^1.8.0",
+    "node-cron": "^3.0.3",
+    "node-telegram-bot-api": "^0.66.0",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.13.1"
+  }
+}

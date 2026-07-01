@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aios-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jarvis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: jarvis
+    volumes:
+      - aios-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jarvis -d jarvis"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  jarvis:
+    build: .
+    container_name: aios
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://jarvis:${POSTGRES_PASSWORD}@postgres:5432/jarvis
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      # Publish to localhost only by default so the dashboard (TIER 1) is NOT
+      # reachable from the LAN/internet. Override WEB_BIND=0.0.0.0 only when
+      # fronting it with a TLS reverse proxy + DASHBOARD_PUBLIC=true.
+      - "${WEB_BIND:-127.0.0.1}:3000:3000"
+    volumes:
+      - ../Jarvis-Vault:/vault
+      # Bind-mount the project itself so the engine can run git from /workspace
+      # (Ep 6 auto-commit). Read-write so commits succeed; the secret guard
+      # prevents anything dangerous from being pushed.
+      - .:/workspace
+      # Live-mount the dashboard assets so UI edits show on reload (no rebuild).
+      - ./public:/app/public
+      # Live-mount the engine source so backend edits need only a restart.
+      - ./src:/app/src
+      # Live-mount the test suite so `docker exec jarvis npm test` always
+      # runs the current tests against the installed node_modules.
+      - ./test:/app/test
+      # Backups (Season 4): DB dumps + vault snapshots land here on the host.
+      - ../Jarvis-Backups:/backups
+
+volumes:
+  aios-pgdata:

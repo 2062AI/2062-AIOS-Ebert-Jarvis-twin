@@ -1,0 +1,27 @@
+# === Secrets — never commit (V2 §19, non-negotiable rule A) ===
+.env
+.env.*
+!.env.example
+secrets/
+*.key
+*.pem
+credentials*.json
+
+# === Node ===
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# === Personal vault content (pushed selectively, not from this repo) ===
+# The vault lives in a sibling folder (../Jarvis-Vault) and is NOT part of
+# this repo. These patterns are a backstop in case it is ever copied in.
+Jarvis-Vault/
+Jarvis-Vault/Config/Connected Services.md
+Jarvis-Vault/Memory/
+
+# === OS / editor cruft ===
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Jarvis — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">◈</div>
+        <div class="brand-text"><span class="brand-name">Jarvis</span></div>
+      </div>
+
+      <nav class="side-nav">
+        <button class="nav-item active" data-tab="overview"><span class="nav-icon">▦</span><span>Dashboard</span></button>
+        <button class="nav-item" data-tab="tasks"><span class="nav-icon">▤</span><span>Tasks</span></button>
+        <button class="nav-item" data-tab="approvals"><span class="nav-icon">✓</span><span>Approvals</span><span class="nav-badge" id="approval-badge" hidden>0</span></button>
+        <button class="nav-item" data-tab="missions"><span class="nav-icon">◎</span><span>Missions</span></button>
+        <button class="nav-item" data-tab="subagents"><span class="nav-icon">◈</span><span>Agent Team</span></button>
+        <button class="nav-item" data-tab="assistant"><span class="nav-icon">◉</span><span>Assistant</span></button>
+        <div class="nav-divider">Business</div>
+        <button class="nav-item" data-tab="revenue"><span class="nav-icon">$</span><span>Revenue</span></button>
+        <button class="nav-item" data-tab="customers"><span class="nav-icon">☺</span><span>Customers</span></button>
+        <button class="nav-item" data-tab="communications"><span class="nav-icon">✉</span><span>Communications</span></button>
+        <button class="nav-item" data-tab="calendar"><span class="nav-icon">▦</span><span>Calendar</span></button>
+        <button class="nav-item" data-tab="youtube"><span class="nav-icon">▶</span><span>YouTube</span></button>
+        <button class="nav-item" data-tab="ember"><span class="nav-icon">🔥</span><span>Ember</span></button>
+        <div class="nav-divider">System</div>
+        <button class="nav-item" data-tab="skills"><span class="nav-icon">🧩</span><span>Skills</span></button>
+        <button class="nav-item" data-tab="quarantine"><span class="nav-icon">🛡</span><span>Quarantine</span><span class="nav-badge" id="quarantine-badge" hidden>0</span></button>
+        <button class="nav-item" data-tab="knowledge"><span class="nav-icon">◈</span><span>Knowledge</span></button>
+        <button class="nav-item" data-tab="files"><span class="nav-icon">▣</span><span>Files</span></button>
+        <button class="nav-item" data-tab="activity"><span class="nav-icon">⚡</span><span>Activity</span></button>
+        <button class="nav-item" data-tab="audit"><span class="nav-icon">🔗</span><span>Audit</span></button>
+        <button class="nav-item" data-tab="status"><span class="nav-icon">◍</span><span>Status</span></button>
+      </nav>
+
+      <div class="side-footer">
+        <div class="kill-pill" id="kill-pill">
+          <span class="kill-dot"></span><span id="kill-text">System OK</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-titles">
+          <h1 id="page-title">Dashboard</h1>
+          <p class="page-sub" id="page-sub">Your AI operating system at a glance</p>
+        </div>
+        <div class="topbar-right">
+          <button class="cmd-btn" id="rail-btn" title="Command panel">⊞ Panel</button>
+          <button class="cmd-btn" id="theme-btn" title="Toggle dark mode">🌙</button>
+          <button class="cmd-btn" id="commands-btn" title="All commands">⌘ Commands</button>
+          <div class="budget-chip">
+            <span class="chip-label">Spent today</span>
+            <span class="chip-value" id="topbar-spend">$0.00</span>
+          </div>
+          <button class="ebert-chip" data-tab="assistant" title="Talk to Ebert">
+            <img src="ebert-face.png?v=3" alt="Ebert">
+            <span>Ebert</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Overview -->
+      <section id="overview-tab" class="tab-content active">
+        <!-- Command-center top row: approvals callout + budget + kill switch -->
+        <div class="cc-row">
+          <div class="cc-card cc-approvals" id="cc-approvals" data-tab="approvals">
+            <div class="cc-big" id="cc-approval-count">—</div>
+            <div class="cc-label">Awaiting your approval</div>
+          </div>
+          <div class="cc-card">
+            <div class="cc-label">Today's spend</div>
+            <div class="cc-budget-row"><span id="cc-spend">—</span><span class="cc-muted" id="cc-cap">/ —</span></div>
+            <div class="budget-bar"><div class="budget-fill" id="cc-budget-fill"></div></div>
+          </div>
+          <div class="cc-card">
+            <div class="cc-label">API spend (this month)</div>
+            <div class="cc-big" id="cc-month-spend">—</div>
+          </div>
+          <div class="cc-card" id="cc-kill">
+            <div class="cc-label">Kill switch</div>
+            <div class="cc-kill-state" id="cc-kill-state">—</div>
+            <button class="btn" id="cc-kill-btn">Toggle</button>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Tasks by Status</h2></div>
+            <div id="chart-donut" class="donut-wrap"><div class="loading">Loading…</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>API Spend — last 7 days</h2></div>
+            <div id="spend-7d" class="spark-chart"><div class="loading">Loading…</div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Quick Access</h2></div>
+          <div class="quick-grid">
+            <button class="quick-card" data-tab="assistant"><span class="quick-ic">◉</span><span class="quick-name">Assistant</span><span class="quick-sub">Talk to Ebert</span></button>
+            <button class="quick-card" data-tab="tasks"><span class="quick-ic">▤</span><span class="quick-name">Tasks</span><span class="quick-sub" id="quick-tasks">—</span></button>
+            <button class="quick-card" data-tab="approvals"><span class="quick-ic">✓</span><span class="quick-name">Approvals</span><span class="quick-sub" id="quick-approvals">—</span></button>
+            <button class="quick-card" data-tab="knowledge"><span class="quick-ic">◈</span><span class="quick-name">Knowledge</span><span class="quick-sub" id="quick-knowledge">—</span></button>
+            <button class="quick-card" data-tab="files"><span class="quick-ic">▣</span><span class="quick-name">Files</span><span class="quick-sub">Browse &amp; upload</span></button>
+            <button class="quick-card" data-tab="status"><span class="quick-ic">◍</span><span class="quick-name">Status</span><span class="quick-sub">Budget &amp; safety</span></button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Recent Activity</h2></div>
+            <div id="overview-list" class="task-list"><div class="loading">Loading…</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Active Missions</h2></div>
+            <div id="overview-missions" class="card-list"><div class="loading">Loading…</div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Agent Team</h2>
+            <button class="btn" id="ov-brief-btn">⚡ Daily Brief</button>
+          </div>
+          <div id="overview-agents" class="agent-team-grid"><div class="loading">Loading…</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Reports</h2>
+            <div style="display:flex;gap:8px">
+              <button class="btn-link" id="ov-report-open">Morning</button>
+              <button class="btn-link" id="ov-weekly-open">Weekly Intel</button>
+            </div>
+          </div>
+          <div id="overview-report" class="report-preview"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- Tasks -->
+      <section id="tasks-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>All Tasks</h2>
+            <select id="status-filter" class="select">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="awaiting_approval">Awaiting Approval</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+              <option value="failed">Failed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div id="tasks-list" class="task-list"><div class="loading">Loading tasks…</div></div>
+        </div>
+      </section>
+
+      <!-- Approvals -->
+      <section id="approvals-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Approvals Needed</h2><p class="panel-sub">Tasks waiting on your decision</p></div>
+          <div id="approvals-list" class="task-list"><div class="loading">Loading approvals…</div></div>
+        </div>
+      </section>
+
+      <!-- Assistant -->
+      <section id="assistant-tab" class="tab-content">
+        <div class="assistant-layout">
+          <div class="panel assistant-left">
+            <div class="ebert-stage">
+              <div class="ebert-halo"></div>
+              <img class="ebert-big" id="ebert-big" src="ebert-face.png?v=3" alt="Ebert, your AI assistant">
+            </div>
+            <h2 class="assistant-name">Ebert</h2>
+            <p class="assistant-status" id="assistant-status">Online · listening</p>
+          </div>
+          <div class="panel assistant-right">
+            <div class="chat-toolbar">
+              <span class="chat-toolbar-label">Dashboard Chat</span>
+              <button class="btn-link" id="chat-clear">Clear</button>
+            </div>
+            <div class="chat-window" id="chat-window">
+              <div class="chat-msg bot"><div class="chat-bubble">Good to see you. Ask me anything — I'm connected and ready. You can send me pictures and files too.</div></div>
+            </div>
+            <div class="emoji-panel" id="emoji-panel" hidden></div>
+            <div class="attach-preview" id="attach-preview" hidden></div>
+            <form class="chat-input" id="chat-form">
+              <button type="button" class="icon-btn" id="emoji-btn" title="Emoji">😊</button>
+              <button type="button" class="icon-btn" id="attach-btn" title="Attach image or file">📎</button>
+              <button type="button" class="icon-btn" id="mic-btn" title="Voice dictation">🎤</button>
+              <input type="file" id="file-input" hidden>
+              <input type="text" id="chat-text" placeholder="Talk to Ebert…" autocomplete="off">
+              <button type="submit" class="btn btn-primary" id="chat-send">Send</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Telegram Session History -->
+        <div class="panel" style="margin-top:18px">
+          <div class="panel-head">
+            <div>
+              <h2>Telegram Session</h2>
+              <p class="panel-sub" id="tg-session-status">Loading…</p>
+            </div>
+            <button class="btn-link" id="tg-session-clear" style="color:var(--red)">Clear session</button>
+          </div>
+          <div id="tg-session-history" class="agent-chat-window" style="max-height:320px">
+            <div class="loading">Loading…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Knowledge -->
+      <section id="knowledge-tab" class="tab-content">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Docs Jarvis Knows</span><span class="stat-icon ic-blue">◈</span></div><span class="stat-value" id="k-total">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">🔴 Private</span></div><span class="stat-value" id="k-t1">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">🟡 Demo-Safe</span></div><span class="stat-value" id="k-t2">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">🟢 Public</span></div><span class="stat-value" id="k-t3">—</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>What Jarvis Can Answer From</h2>
+            <p class="panel-sub">Every vault document indexed for retrieval, with its data-classification tier</p>
+          </div>
+          <div id="knowledge-list" class="knowledge-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- Funding (Season 4: Homestead) -->
+
+      <section id="youtube-tab" class="tab-content">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Subscribers</span><span class="stat-icon ic-red">▶</span></div><span class="stat-value" id="yt-subs">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Views</span><span class="stat-icon ic-blue">👁</span></div><span class="stat-value" id="yt-views">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Videos</span><span class="stat-icon ic-violet">▤</span></div><span class="stat-value" id="yt-count">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Channel</span><span class="stat-icon ic-amber">◉</span></div><span class="stat-value stat-value-sm" id="yt-title">—</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent Uploads</h2>
+            <button class="btn btn-primary" id="yt-refresh-btn">↻ Refresh</button>
+          </div>
+          <div id="yt-list" class="yt-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <section id="ember-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>🔥 Ember — Chief Brand Officer</h2>
+            <button class="btn btn-primary" id="ember-brief-btn">📋 Generate Monthly Brand Brief</button>
+          </div>
+          <p class="muted-line">Brand amplification &amp; PR for the owner's brand portfolio. Ember drafts and recommends — you approve everything that ships. The brief lands in <b>Approvals</b>.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Voice Check (F0)</h2></div>
+            <select class="select" id="ember-voice-brand"></select>
+            <textarea class="ember-input" id="ember-voice-text" rows="4" placeholder="Paste copy to check against the brand voice…"></textarea>
+            <button class="btn btn-primary" id="ember-voice-btn">Check voice</button>
+            <div id="ember-voice-out" class="ember-out"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Tagline Drafting (F5)</h2></div>
+            <select class="select" id="ember-tag-brand"></select>
+            <input class="ember-input" id="ember-tag-ctx" placeholder="Optional focus/context (e.g. EduForge launch)" />
+            <button class="btn btn-primary" id="ember-tag-btn">Draft taglines</button>
+            <div id="ember-tag-out" class="ember-out"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Function Status</h2></div>
+          <div id="ember-functions" class="ember-funcs"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <section id="skills-tab" class="tab-content">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Create a Skill</h2></div>
+            <p class="muted-line">Reusable instructions Ebert loads when relevant. Everything is safety-checked before it installs.</p>
+            <input class="ember-input" id="skill-name" placeholder="Skill name (e.g. Cold Outreach Email)">
+            <input class="ember-input" id="skill-desc" placeholder="When to use it (drives auto-match)">
+            <textarea class="ember-input" id="skill-body" rows="6" placeholder="The instructions…"></textarea>
+            <div class="row-btns">
+              <button class="btn" id="skill-proofread">✍️ Proofread</button>
+              <button class="btn btn-primary" id="skill-create">Create skill</button>
+            </div>
+            <div id="skill-create-out" class="ember-out"></div>
+            <div class="panel-head" style="margin-top:16px"><h2>Or upload a skill file</h2></div>
+            <input type="file" id="skill-file" accept=".md,.txt,.markdown">
+            <div id="skill-upload-out" class="ember-out"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Installed Skills</h2><button class="btn-link" id="skills-refresh">↻ Refresh</button></div>
+            <div id="skills-list" class="skills-list"><div class="loading">Loading…</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="quarantine-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>🛡 Quarantine</h2>
+            <button class="btn btn-primary" id="q-approve-amber">Approve all flagged</button>
+          </div>
+          <p class="muted-line">Files the safety gate held for review. 🟡 <b>flagged</b> can be bulk-approved; 🔴 <b>toxic</b> are held and need an explicit decision.</p>
+          <div id="quarantine-list" class="q-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <section id="subagents-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Specialist Sub-Agents</h2><p class="panel-sub">Pick a specialist to chat with directly — and bring Jarvis in to collaborate.</p></div>
+          <div class="agent-picker" id="agent-picker"><div class="loading">Loading…</div></div>
+        </div>
+        <div class="panel" id="agent-chat-panel" hidden>
+          <div class="panel-head"><h2 id="agent-chat-title">Specialist</h2><button class="btn" id="agent-collab">🤝 Bring in Jarvis</button></div>
+          <div class="agent-chat-window" id="agent-chat-window"></div>
+          <form class="agent-chat-form" id="agent-chat-form">
+            <input id="agent-chat-text" placeholder="Message this specialist…" autocomplete="off" required>
+            <button class="btn btn-primary" type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Missions + Sub-agents -->
+      <section id="missions-tab" class="tab-content">
+        <div class="panel"><div class="panel-head"><h2>Mission Registry</h2><p class="panel-sub">Active and proposed missions</p></div>
+          <div id="missions-list" class="card-list"><div class="loading">Loading…</div></div></div>
+        <div class="panel">
+          <div class="panel-head"><h2>Sub-Agents</h2><p class="panel-sub">Spawn a specialist worker for a one-off task — it runs, then retires</p></div>
+          <form class="rec-form" id="delegate-form">
+            <select name="domain" id="delegate-domain"></select>
+            <input name="task" placeholder="Task for the sub-agent…" style="flex:3" required>
+            <button class="btn btn-primary" type="submit">Delegate</button>
+          </form>
+          <div id="delegate-result"></div>
+          <div class="panel-head" style="margin-top:18px"><h2>Recent Sub-Agent Activity</h2></div>
+          <div id="subagent-activity" class="rec-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- Revenue -->
+      <section id="revenue-tab" class="tab-content">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Income</span><span class="stat-icon ic-green">$</span></div><span class="stat-value" id="rev-income">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Expenses</span><span class="stat-icon ic-amber">−</span></div><span class="stat-value" id="rev-expense">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Profit</span><span class="stat-icon ic-blue">∑</span></div><span class="stat-value" id="rev-profit">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Monthly Goal</span><span class="stat-icon ic-violet">◎</span></div><span class="stat-value">$5–10K</span></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h2>By Source</h2></div><div id="rev-by-source" class="bar-chart"><div class="loading">…</div></div></div>
+          <div class="panel"><div class="panel-head"><h2>By Month</h2></div><div id="rev-by-month" class="bar-chart"><div class="loading">…</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Entries</h2></div>
+          <form class="rec-form" id="rev-form">
+            <input name="source" placeholder="Source (EduForge, Quail…)" required>
+            <select name="kind"><option value="income">income</option><option value="expense">expense</option></select>
+            <input name="amount_usd" type="number" step="0.01" placeholder="Amount" required>
+            <input name="month" type="month" required>
+            <input name="note" placeholder="Note (optional)">
+            <button class="btn btn-primary" type="submit">Add</button>
+          </form>
+          <div id="rev-list" class="rec-list"></div>
+        </div>
+      </section>
+
+      <!-- Customers -->
+      <section id="customers-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Customers &amp; Leads</h2></div>
+          <form class="rec-form" id="cust-form">
+            <input name="name" placeholder="Name" required>
+            <input name="company" placeholder="Company">
+            <input name="email" placeholder="Email">
+            <input name="phone" placeholder="Phone">
+            <select name="status"><option value="lead">lead</option><option value="active">active</option><option value="past">past</option></select>
+            <button class="btn btn-primary" type="submit">Add</button>
+          </form>
+          <div id="cust-list" class="rec-list"></div>
+        </div>
+      </section>
+
+      <!-- Communications -->
+      <section id="communications-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Communications</h2><p class="panel-sub">Outgoing &amp; received — logged here (Gmail sync optional later)</p></div>
+          <form class="rec-form" id="comm-form">
+            <select name="direction"><option value="out">outgoing</option><option value="in">received</option></select>
+            <select name="channel"><option value="email">email</option><option value="call">call</option><option value="dm">dm</option><option value="other">other</option></select>
+            <input name="party" placeholder="Who">
+            <input name="subject" placeholder="Subject">
+            <input name="body" placeholder="Summary">
+            <button class="btn btn-primary" type="submit">Log</button>
+          </form>
+          <div id="comm-list" class="rec-list"></div>
+        </div>
+      </section>
+
+      <!-- Calendar (with monthly grid; meetings included) -->
+      <section id="calendar-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="cal-nav"><button class="btn" id="cal-prev">‹</button><h2 id="cal-month">—</h2><button class="btn" id="cal-next">›</button></div>
+            <button class="btn-link" id="cal-today">Today</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Add Event / Meeting</h2></div>
+          <form class="rec-form" id="cal-form">
+            <input name="title" placeholder="Title" required>
+            <input name="starts_at" type="datetime-local" required>
+            <select name="kind"><option value="event">event</option><option value="meeting">meeting</option></select>
+            <input name="location" placeholder="Location / link">
+            <input name="attendees" placeholder="Attendees">
+            <button class="btn btn-primary" type="submit">Add</button>
+          </form>
+          <div id="cal-list" class="rec-list"></div>
+        </div>
+      </section>
+
+      <!-- Meetings -->
+      <section id="meetings-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Upcoming Meetings</h2></div>
+          <div id="meetings-upcoming" class="rec-list"><div class="loading">Loading…</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Past Meetings</h2></div>
+          <div id="meetings-past" class="rec-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- Activity (LLM / model routing) -->
+      <section id="activity-tab" class="tab-content">
+        <div class="panel"><div class="panel-head"><h2>Models Used</h2><p class="panel-sub">Which LLM handled what, and the cost</p></div>
+          <div id="usage-by-model" class="bar-chart"><div class="loading">…</div></div></div>
+        <div class="panel"><div class="panel-head"><h2>Recent LLM Calls</h2></div>
+          <div id="usage-recent" class="rec-list"><div class="loading">…</div></div></div>
+      </section>
+
+      <!-- Audit -->
+      <section id="audit-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head"><h2>Audit Log</h2><button class="btn btn-primary" id="audit-verify-btn">Verify chain</button></div>
+          <div id="audit-state" class="audit-state"></div>
+          <div id="audit-list" class="rec-list"><div class="loading">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- Files -->
+      <section id="files-tab" class="tab-content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Files</h2>
+            <div class="files-controls">
+              <select id="root-select" class="select"></select>
+              <button class="btn btn-primary" id="files-upload-btn">⬆ Upload</button>
+              <input type="file" id="files-upload-input" hidden>
+            </div>
+          </div>
+          <div class="breadcrumb" id="breadcrumb"></div>
+          <div id="files-list" class="files-list"><div class="loading">Loading…</div></div>
+          <p class="files-hint">Browsing is limited to allowed folders. To add a desktop/VPS folder, mount it into the container and set <code>BROWSE_DIRS</code>.</p>
+        </div>
+      </section>
+
+      <!-- Status -->
+      <section id="status-tab" class="tab-content">
+        <!-- System health probes -->
+        <div class="panel probe-panel">
+          <div class="panel-head"><h2>System Health</h2><span class="panel-sub" id="probe-timestamp">—</span></div>
+          <div class="probe-row" id="probe-row">
+            <span class="probe-pill probe-unknown" id="probe-engine">Engine</span>
+            <span class="probe-pill probe-unknown" id="probe-db">Database</span>
+            <span class="probe-pill probe-unknown" id="probe-budget">Budget</span>
+            <span class="probe-pill probe-unknown" id="probe-killswitch">Kill Switch</span>
+            <span class="probe-pill probe-unknown" id="probe-auth">Auth</span>
+            <span class="probe-pill probe-unknown" id="probe-https">HTTPS</span>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Daily Budget</span></div><span class="stat-value" id="m-cap">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Spent Today</span></div><span class="stat-value" id="m-spent">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Remaining</span></div><span class="stat-value" id="m-remaining">—</span></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">Kill Switch</span></div><span class="stat-value" id="m-kill">—</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Budget Usage</h2></div>
+          <div class="budget-bar"><div class="budget-fill" id="budget-fill"></div></div>
+          <p class="budget-caption" id="budget-caption">—</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Kill Switch</h2><p class="panel-sub">Halt all LLM activity instantly</p></div>
+          <div class="kill-control">
+            <div class="kill-state" id="kill-state">—</div>
+            <button class="btn" id="kill-toggle">Toggle</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Backups</h2><p class="panel-sub">DB + vault snapshot · nightly 3am</p></div>
+          <div class="kill-control">
+            <div class="kill-state off" id="backup-state">—</div>
+            <button class="btn btn-primary" id="backup-now">Back up now</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Command-center right rail (persistent): Chat / Agents / Preview -->
+    <aside class="cmd-rail" id="cmd-rail">
+      <div class="rail-tabs">
+        <button class="rail-tab active" data-rail="chat">💬 Chat</button>
+        <button class="rail-tab" data-rail="agents">🤖 Agents</button>
+        <button class="rail-tab" data-rail="preview">📄 Preview</button>
+        <button class="rail-close" id="rail-close" title="Close panel">✕</button>
+      </div>
+      <div class="rail-pane active" id="rail-chat">
+        <div class="rail-chat-window" id="rail-chat-window"><div class="rail-hint">Quick line to Ebert — the full chat with history lives on the Assistant tab.</div></div>
+        <form class="rail-chat-input" id="rail-chat-form">
+          <input type="text" id="rail-chat-text" placeholder="Ask Ebert…" autocomplete="off">
+          <button class="btn btn-primary" type="submit" id="rail-chat-send">↑</button>
+        </form>
+      </div>
+      <div class="rail-pane" id="rail-agents"><div class="loading">Loading…</div></div>
+      <div class="rail-pane" id="rail-preview">
+        <div class="rail-preview-bar">
+          <select class="select" id="rail-preview-select"><option value="">Latest report</option></select>
+          <button class="btn-link" id="rail-preview-refresh" title="Refresh">↻</button>
+        </div>
+        <div class="rail-preview-body" id="rail-preview-body"><div class="empty-state">Pick something to preview.</div></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Commands reference modal -->
+  <div class="modal-overlay" id="commands-overlay" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title">All Commands</span>
+        <button class="modal-close" id="commands-close">✕</button>
+      </div>
+      <div class="modal-body" id="commands-body"></div>
+    </div>
+  </div>
+
+  <!-- Markdown reader modal (Ep 17) -->
+  <div class="modal-overlay" id="reader-overlay" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title" id="reader-title">Document</span>
+        <button class="modal-close" id="reader-close">✕</button>
+      </div>
+      <div class="modal-body markdown" id="reader-body"></div>
+    </div>
+  </div>
+
+  <!-- Event edit modal -->
+  <div class="modal-overlay" id="event-edit-overlay" hidden>
+    <div class="modal" style="max-width:480px">
+      <div class="modal-head">
+        <span class="modal-title">Edit Event / Deadline</span>
+        <button class="modal-close" id="event-edit-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="event-edit-form" class="rec-form" style="margin:0">
+          <input type="hidden" id="event-edit-id">
+          <input id="event-edit-title" name="title" placeholder="Title" required>
+          <input id="event-edit-starts_at" name="starts_at" type="datetime-local" required>
+          <select id="event-edit-kind" name="kind">
+            <option value="event">event</option>
+            <option value="meeting">meeting</option>
+            <option value="deadline">deadline</option>
+            <option value="task">task</option>
+          </select>
+          <input id="event-edit-location" name="location" placeholder="Location / link">
+          <input id="event-edit-attendees" name="attendees" placeholder="Attendees">
+          <textarea id="event-edit-note" name="note" placeholder="Notes" rows="3" style="resize:vertical;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text-1);font-size:0.82rem"></textarea>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="btn btn-primary" type="submit" style="flex:1">Save changes</button>
+            <button class="btn" type="button" id="event-edit-delete" style="color:var(--red)">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Always-on mini Ebert (hidden on the Assistant tab) -->
+  <button class="avatar-mini" id="avatar-mini" data-tab="assistant" title="Talk to Ebert">
+    <div class="mini-halo"></div>
+    <img src="ebert-face.png?v=3" alt="Ebert">
+  </button>
+
+  <script src="app.js?v=3"></script>
+</body>
+</html>
